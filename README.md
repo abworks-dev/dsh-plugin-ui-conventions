@@ -42,9 +42,9 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 | [`ds-harness-remote`](https://github.com/liguobao/ds-harness-remote) | 0.6.7 | `206c25e`（PR #498，issue #462） |
 | [`dsh-mobile`](https://github.com/saya-ch/dsh-mobile) | 0.8.14 | `b794e32`（PR #452，issue #440） |
 
-三个插件并排时的实际效果（真实宿主、真实插件构建产物）：
+三个入口并排的效果（模拟宿主渲染：真实插件构建产物 + 宿主 CSS，非实机截图）：
 
-![三个入口并排](docs/images/04-real-3seats.png)
+![三个入口并排](docs/images/03-three-seats-268.png)
 
 ## 怎么引用
 
