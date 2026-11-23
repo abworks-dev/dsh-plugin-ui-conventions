@@ -32,7 +32,7 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 | [25 · 卡片型占用者](conventions/25-card-occupants.md) | 卡片型（信息卡/数据卡）与按钮型共存的三种形态与硬规则 | 草案 |
 | [30 · 面板与浮层](conventions/30-panels.md) | 宽度档位、圆角、内边距 | 草案 |
 | [40 · 状态、焦点与可访问性](conventions/40-states-and-a11y.md) | 焦点环、hover/active、图标态的命名 | v1.0（部分） |
-| [90 · 参考实现](conventions/90-reference-implementations.md) | 三个已采纳插件的版本、代码位置、实测数字 | v1.0 |
+| [90 · 参考实现](conventions/90-reference-implementations.md) | 已采纳插件的版本、代码位置、实测数字 | v1.0 |
 
 ## 已验证的采纳情况
 
