@@ -29,7 +29,7 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 | [00 · 基本原则](conventions/00-principles.md) | 五条硬原则：不改造宿主容器、单一判定输入、全有或全无…… | v1.0 |
 | [10 · 宿主 token 与尺度基准](conventions/10-host-tokens.md) | 侧栏间距 token、圆角梯级、行高与图标尺寸 | v1.0 |
 | [20 · 侧栏底部入口（footer.action）](conventions/20-sidebar-footer.md) | 两态几何、容量规则、order 档位、适配指南、反模式 | **v1.0 · 已实践** |
-| [25 · 卡片型占用者](conventions/25-card-occupants.md) | 卡片型（信息卡/数据卡）与按钮型共存的三种形态与硬规则 | 草案 |
+| [25 · 卡片型占用者](conventions/25-card-occupants.md) | 卡片型（信息卡/数据卡）与按钮型共存的三种形态与硬规则 | v1.1 · 方案 A 已实践 |
 | [30 · 面板与浮层](conventions/30-panels.md) | 宽度档位、圆角、内边距 | 草案 |
 | [40 · 状态、焦点与可访问性](conventions/40-states-and-a11y.md) | 焦点环、hover/active、图标态的命名 | v1.0（部分） |
 | [90 · 参考实现](conventions/90-reference-implementations.md) | 已采纳插件的版本、代码位置、实测数字 | v1.0 |
@@ -41,6 +41,7 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 | [`dsh-chat-import`](https://github.com/Nwflower/dsh-chat-import) | 0.26.8 | `52da14e`（issue #120） |
 | [`ds-harness-remote`](https://github.com/liguobao/ds-harness-remote) | 0.6.7 | `206c25e`（PR #498，issue #462） |
 | [`dsh-mobile`](https://github.com/saya-ch/dsh-mobile) | 0.8.14 | `b794e32`（PR #452，issue #440） |
+| [`dsh-cost-meter`](https://github.com/Jianke-C/dsh-cost-meter) | 1.9.86 | `PR #577`（issue #576）· 卡片型，§25 方案 A |
 
 三个入口并排的效果（模拟宿主渲染：真实插件构建产物 + 宿主 CSS，非实机截图）：
 
