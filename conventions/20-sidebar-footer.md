@@ -55,7 +55,7 @@
 /* hover */
 background-color: var(--dsw-alias-interactive-bg-hover);
 /* 焦点 */
-outline: 2px solid var(--dsw-alias-brand-primary);
+outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
 outline-offset: -2px;   /* 向内，避免被相邻入口裁掉 */
 ```
 

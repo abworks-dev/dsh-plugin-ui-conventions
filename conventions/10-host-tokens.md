@@ -56,7 +56,7 @@ background-clip: padding-box;
 |---|---|
 | 主文字 | `--dsw-alias-label-primary` |
 | hover 底色 | `--dsw-alias-interactive-bg-hover` |
-| 焦点环 | `--dsw-alias-brand-primary` |
+| 焦点环 | `--dsw-focus-ring-color`（未定义时回退 `--dsw-alias-state-business-primary`） |
 | 品牌/业务强调 | `--dsw-alias-state-business-primary` |
 
-> 注：`dsh-mobile` 0.8.14 的焦点环用的是 `--dsw-alias-state-business-primary`（两者都在主题里存在，视觉接近）。**新实现请用 `--dsw-alias-brand-primary`**，并在 §40 保持一致。
+> 注：这是宿主 `ui-theme/src/styles/focus.css` 的写法 —— `outline-color: var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary))`；`--dsw-focus-ring-color` 只在指针模态被设为 `transparent`，键盘导航时自动回退到业务主色。
