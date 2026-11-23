@@ -41,7 +41,7 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 | [`dsh-chat-import`](https://github.com/Nwflower/dsh-chat-import) | 0.26.8 | `52da14e`（issue #120） |
 | [`ds-harness-remote`](https://github.com/liguobao/ds-harness-remote) | 0.6.7 | `206c25e`（PR #498，issue #462） |
 | [`dsh-mobile`](https://github.com/saya-ch/dsh-mobile) | 0.8.14 | `b794e32`（PR #452，issue #440） |
-| [`dsh-cost-meter`](https://github.com/Jianke-C/dsh-cost-meter) | 1.9.86 | `PR #577`（issue #576）· 卡片型，§25 方案 A |
+| [`dsh-cost-meter`](https://github.com/Han-1413141/dsh-cost-meter) | 1.9.86 | `PR #577`（issue #576）· 卡片型，§25 方案 A |
 
 三个入口并排的效果（模拟宿主渲染：真实插件构建产物 + 宿主 CSS，非实机截图）：
 

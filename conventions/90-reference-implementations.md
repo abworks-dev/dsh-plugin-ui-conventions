@@ -25,9 +25,9 @@
 
 ---
 
-## 卡片型（§25 方案 A）：`dsh-cost-meter` 1.9.86（`Jianke-C/dsh-cost-meter`）
+## 卡片型（§25 方案 A）：`dsh-cost-meter` 1.9.86（`Han-1413141/dsh-cost-meter`）
 
-- 发布：v1.9.86，PR [#577](https://github.com/Jianke-C/dsh-cost-meter/pull/577)，issue [#576](https://github.com/Jianke-C/dsh-cost-meter/issues/576)
+- 发布：v1.9.86，PR [#577](https://github.com/Han-1413141/dsh-cost-meter/pull/577)，issue [#576](https://github.com/Han-1413141/dsh-cost-meter/issues/576)
 - 行为：独占槽位时保留原费用卡（`width:100%`）；**存在其它可见入口时**收成同一行的 `36 × 36` 钱包按钮（`12px` 圆角，与邻居同高同理），点击在同一行上方展开完整卡片，`Esc` / 点击外部关闭；邻居隐藏或卸载后自动展开回卡片。
 - 关键点：**条目本身不再修改宿主行的 `flex-wrap` / `flex-direction`** —— 换行与方向交回宿主。这是 §25 方案 A 与「自己 `:has()` 注入 wrap」的本质差别。
 - 验证：Chrome 覆盖侧栏展开/收起 × 两种插槽结构 × 邻居动态挂载/移除，共 48 种布局、20 次切换；含首次布局时邻居被挤到零宽的情况。

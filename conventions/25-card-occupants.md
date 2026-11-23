@@ -53,7 +53,7 @@
 
 | 插件 | 形态 | 状态 |
 |---|---|---|
-| [`dsh-cost-meter`](https://github.com/Han-1413141/dsh-cost-meter) | 纵向多行卡片，`width:100%`，最多注册 4 个节点 | **已按方案 A 落地**：v1.9.86（[PR #577](https://github.com/Jianke-C/dsh-cost-meter/pull/577)，issue [#576](https://github.com/Jianke-C/dsh-cost-meter/issues/576)） |
+| [`dsh-cost-meter`](https://github.com/Han-1413141/dsh-cost-meter) | 纵向多行卡片，`width:100%`，最多注册 4 个节点 | **已按方案 A 落地**：v1.9.86（[PR #577](https://github.com/Han-1413141/dsh-cost-meter/pull/577)，issue [#576](https://github.com/Han-1413141/dsh-cost-meter/issues/576)） |
 | [`dsh-ui-usage-billing`](https://github.com/kenz1117/dsh-ui-usage-billing) | 宽卡（`@container` 三级降级），`order:-10` | 讨论中（[#130](https://github.com/kenz1117/dsh-ui-usage-billing/issues/130)） |
 
 方案 A 已落地，状态升为 v1.1；其余三个待定问题（高度上限、默认展开、排序归属）收敛后再小幅升版，并把最终形态补进 §20 的适配指南。
