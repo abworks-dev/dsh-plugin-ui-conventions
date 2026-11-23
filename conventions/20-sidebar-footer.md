@@ -1,0 +1,211 @@
+# 20 · 侧栏底部入口（`sidebar.footer.action`）
+
+**状态：v1.0 · 已实践**（`dsh-chat-import` 0.26.8 / `ds-harness-remote` 0.6.7 / `dsh-mobile` 0.8.14 均按本章实现并发布）
+
+---
+
+## 20.1 容器事实
+
+宿主提供的是一个**列表槽**，多个插件可以同时注册：
+
+```
+"sidebar.footer.action": { kind: "list", scope: "root", owner: { wide: boolean } }
+```
+
+渲染结构（`dsh-client-ui-sidebar`）：
+
+```jsx
+<div class="footArea">
+  <div class="footerActions">{renderSlot("sidebar.footer.action", { wide })}</div>
+  <div class="settingsArea">{renderSlot("sidebar.settings", { wide })}</div>
+</div>
+```
+
+关键 CSS 事实：
+
+| 事实 | 值 | 影响 |
+|---|---|---|
+| `.footerActions` | `display: flex`，**无 `gap`、无 `padding`、`nowrap`** | 间距必须由每个入口自己出 |
+| 每个槽位外壳 | `[data-slot]` + `display: contents` | `clientWidth` 恒为 0，**不能用来测量** |
+| owner props | 只有 `{ wide }`，**没有 `count`** | 入口数必须自己数 |
+| `.collapsed .footerActions` | `justify-content: center; width: auto` | 折叠态（rail）由宿主居中，插件只负责 36×36 |
+
+所以：**几何、间距、容量判定，全部由插件自己负责**。这正是本章存在的原因。
+
+---
+
+## 20.2 两态几何（MUST）
+
+| 属性 | 文字态（label） | 图标态（icon） | 说明 |
+|---|---|---|---|
+| `height` | `42px` | `36px` | 文字态与设置行同高 |
+| `width` | 由内容决定，`flex: 1 1 auto`（独占时撑满） | `36px`（`flex: 0 0 auto`） | ≥2 个占位时文字态改 `flex: 0 0 auto` + `width: auto` |
+| `padding` | `0 calc(var(--dsh-sidebar-row-padding,12px) - var(--dsh-sidebar-paint-inset,3px))` | `0` | 见 §10 |
+| `border-inline` | `var(--dsh-sidebar-paint-inset,3px) solid transparent` | `0` | 配 `background-clip: padding-box` |
+| `border-radius` | `var(--dsw-radius-md,12px)` | `var(--dsw-radius-md,12px)` | **图标态也是 12px，不是 50%** |
+| `gap` | `var(--dsh-sidebar-label-gap,6px)` | `0` | |
+| `margin` | `4px 2px` | `4px 2px` | 两态一致，保证垂直位置不跳 |
+| 图标 | `16 × 16` | `18 × 18` | |
+| 字号 | `14px / 22px` | — | |
+| `justify-content` | `flex-start` | `center` | |
+
+### 状态
+
+```css
+/* hover */
+background-color: var(--dsw-alias-interactive-bg-hover);
+/* 焦点 */
+outline: 2px solid var(--dsw-alias-brand-primary);
+outline-offset: -2px;   /* 向内，避免被相邻入口裁掉 */
+```
+
+### 关于 `margin: 4px 2px`
+
+`4px` 竖直方向是为了和设置行 `.triggerRow { margin: 4px 0 }` 对齐；`2px` 水平方向是给相邻入口之间留下 4px 的最小间隙（两个相邻各出 2px），因为宿主容器没有 `gap`。
+
+---
+
+## 20.3 容量规则（MUST）
+
+一排共享入口**全有或全无**：要么全带文字，要么全图标（见 §00 原则 3）。
+
+### 公式
+
+```
+required(count) = count × 112 + (count − 1) × 4 + 16
+```
+
+- `112` = 单个入口的文字宽度上限（`FOOTER_MAX_LABEL_BOX`）
+- `4` = 相邻入口间隙（两边的 `margin-inline: 2px` 相加）
+- `16` = 行两端各 8px 的安全余量
+
+### 判定
+
+```
+showLabel =
+    count >= 1 && count <= 2
+ && rowWidth >= required(count)
+```
+
+其余情况一律图标态。补充规则：
+
+| 输入 | 结果 |
+|---|---|
+| `count <= 0`（还没测到） | 文字态（保守，先给文字，测到后再收） |
+| `count > 2` | 恒图标态（三个及以上永远不显示文字） |
+| `rowWidth` 非有限数 | 图标态 |
+| 折叠态（rail，`wide === false`） | 恒图标态，不参与容量计算 |
+| 容器不是横向行（`flex-direction` 非 row）或已换行（`flex-wrap` 非 nowrap） | 文字态，整宽显示（`width: 100%`） |
+
+### 阈值参考
+
+| count | required | 含义 |
+|---|---|---|
+| 1 | 128 | 侧栏宽 ≥ 128px 才带文字 |
+| 2 | 244 | 两个入口都带文字需要 ≥ 244px |
+| 3 | 360 | 永远不达（因为 count>2 恒图标） |
+
+---
+
+## 20.4 怎么测（`count` 与 `rowWidth`）
+
+```js
+// 1) 向上找到「真正的行」：跳过 display:contents 的外壳，也跳过单子元素的普通包裹层
+let row = button;
+while (row && row.parentElement) {
+  const style = getComputedStyle(row.parentElement);
+  if (style.display !== 'contents') {
+    if (style.display.includes('flex')) break;
+    if (row.parentElement.children.length > 1) break;
+  }
+  row = row.parentElement;
+}
+
+// 2) 数同排有几个占位：展开 display:contents 的子项，排除自己、排除不可见元素
+//    （position 为 fixed/absolute，或 rect 宽高为 0 的一律不算）
+
+// 3) 读宽度：row.clientWidth
+```
+
+**不要**读 `[data-slot]` 外壳的宽度（恒 0），**不要**测邻居按钮的宽度（循环依赖）。
+
+变化监听（三路都要，缺一个就会在某些场景不刷新）：
+
+| 触发源 | 观察对象 |
+|---|---|
+| `ResizeObserver` | 行 + 自己的按钮 |
+| `MutationObserver` | 行的子树：`childList` / `subtree` / `attributes`（`style`、`class`、`hidden`） |
+| `window` `resize` | 侧栏可拖拽调整宽度，必须响应 |
+
+> 自己在回调里改 `class` 时要防重入（记录上一次的值，相同就不写），否则 `MutationObserver` 会被自己触发成环。
+
+---
+
+## 20.5 `order` 档位（SHOULD）
+
+同一排里的先后顺序由注册时的 `order` 决定（升序，宿主渲染器支持）。按**入口的性质**分档，避免每个插件都抢第一位：
+
+| 档位 | 用途 | 例子 |
+|---|---|---|
+| `0 – 19` | 账号 / 身份 / 连接 | `ds-harness-remote` 用 `0` |
+| `20 – 39` | 会话 / 数据 / 内容 | `dsh-chat-import` 用 `20` |
+| `40 +` | 设备 / 端 / 外设 | `dsh-mobile` 用 `40` |
+
+---
+
+## 20.6 适配指南（照着改，约 10 行）
+
+1. 从参考实现里拷一份 `footer-lane` 纯函数模块（见 [§90](90-reference-implementations.md)），或自己实现 §20.3 的公式。
+2. 入口组件加一个 `ref`，在 `useEffect` 里挂观察器，把 `resolveFooterForm(count, rowWidth)` 的结果映射成两个类：
+   - 文字态 → 无额外类（或 `.is-shared`，当 `count > 1` 时改 `flex: 0 0 auto; width: auto`）
+   - 图标态 → `.is-icon`
+3. CSS 按 §20.2 的表抄两态。
+4. 把渲染里「是否显示文字」的判断从 `props.wide` 改成 `props.wide && form === 'label'` —— **`wide` 是「侧栏展开」，不是「有空间放文字」，这两个必须拆开**。
+5. 注册时给 `order` 一个符合 §20.5 的值。
+
+---
+
+## 20.7 反模式（真实案例）
+
+| 反模式 | 实例 | 后果 |
+|---|---|---|
+| 给宿主行注入 `flex-wrap: wrap` | `zh667/TokenLedger`：`div:has(> [data-slot='sidebar.footer.action']){flex-wrap:wrap}` + 入口 `height:49px; margin:8px 0 0` | 改变了所有邻居的排布；49px 与 42px 行不同高 |
+| 运行时改宿主行、卸载再还原 | `Ychris12138/dsh-usage-stats`（`lib/client.js`，为 issue #21/#82） | 逻辑更小心，但仍是改共享容器；与别的插件同时改会互相覆盖 |
+| 用 `:only-child` 判定容量 | `dsh-mobile` 0.6.14–0.8.13：`:not(.is-rail):not(:only-child){flex:0 0 44px}` | 必然「一个带字、一个不带字」混搭；44×42 的尺寸也和 42px 行不同高 |
+| 圆形按钮 | `Aisland-SJL/dsh-usage`：`border-radius:50%` | 一行里圆角不统一，观感割裂 |
+| 图标态用 `50%` 圆角 | 上述三个插件 2026-11 之前都是 | 已在 v1.0 统一为 12px |
+
+---
+
+## 20.8 实测对照（真实宿主 + 真实插件构建产物）
+
+改前（268px 侧栏，同一行三个入口）：
+
+| 入口 | 尺寸 | 圆角 |
+|---|---|---|
+| `ds-harness-remote` | `108 × 36` | `8px` |
+| `dsh-chat-import` | `36 × 36` | `50%` |
+| `dsh-mobile` | `98 × 42` | `12px` |
+
+改后：
+
+| 场景 | 行宽 | 结果 |
+|---|---|---|
+| 三入口 | 268px（行 251px） | 三个 `36 × 36` / `12px` / 间距 4px |
+| 两入口 | 268px | 各 `102 × 42`，pad `9px`、gap `6px`、`12px` |
+| 两入口 | 200px（行 183px） | 退回 `36 × 36` |
+| 折叠态 | — | `36 × 36` |
+
+![改前 / 改后对照](../docs/images/01-before-after.png)
+
+![容量三态](../docs/images/02-capacity-rule.png)
+
+---
+
+## 20.9 历史说明：44×42 从哪来、为什么被取代
+
+`dsh-mobile` issue #237（2026-10-21，用户反馈「移动访问」和余额插件挤在一行）当天发的 0.6.14 引入了紧凑形态：与其他入口共用一行时用 44×42 无字方块，独占时恢复文字。
+
+问题不在「有紧凑形态」，而在**判定维度**：它用 `:only-child` 判断「有没有邻居」，而不是「行里放不放得下」。于是只要有邻居就无条件收紧，两个入口时必然一个是 44×42 方块、一个是带字的 42px 行 —— 高度和宽度都对不齐。
+
+v1.0 用「全有或全无 + 容量公式」取代它。如果将来确实需要第三种更小的中间态，应该是**在 42px 行体系内的新档位**（沿用 12px 圆角、9px 内边距），而不是回到 44 宽 × 42 高的方形。
