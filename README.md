@@ -53,6 +53,16 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 
 > 本插件遵循 [DSH 插件 UI 约定 §20 侧栏底部入口](https://github.com/abworks-dev/dsh-plugin-ui-conventions/blob/main/conventions/20-sidebar-footer.md)（社区约定，非官方）。
 
+## 给插件作者 / AI 助手：迁移 skill
+
+`skills/dsh-ui-conventions/` 是一个给 agent 用的迁移助手，装上后可以让 AI 直接读着你插件的代码改：
+
+- `SKILL.md` —— 判定按钮型 / 卡片型、套 §20 或 §25、删宿主改造、自检清单
+- `scripts/audit.mjs` —— 只读审计：`node skills/dsh-ui-conventions/scripts/audit.mjs <插件仓库>`
+- `references/footer-lane.ts` —— 可直接拷走的容量契约实现（MIT）
+
+安装：把 `skills/dsh-ui-conventions/` 整个目录放到 DSH 的 skills 目录（`$DSH_HOME/skills/`）即可。
+
 ## 版本策略
 
 - 语义化版本：`v1.x` 只做澄清与新增（不改已有数值）；改数值或改判定规则必须进 `v2.0`，并在 [CHANGELOG](CHANGELOG.md) 写明迁移方式。

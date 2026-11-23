@@ -6,6 +6,7 @@
 - §25 卡片型占用者（`conventions/25-card-occupants.md`）：区分按钮型 / 卡片型；给出 A（降级为图标）/ B（卡片独占一行）/ C（移出 footer）三种形态及各自代价；五条硬规则（`count>1` 禁止 `width:100%`、禁止改造宿主容器、必须提供 36×36 兜底、B 形态不得挤压邻居、卡片不计入 §20 容量公式）。
 - 配图 `docs/images/05-occupancy-modes.png`（四种共存形态对比）。
 - §20 增加 20.10 指向本节。
+- 新增 `skills/dsh-ui-conventions/`：面向 agent 的迁移 skill（`SKILL.md` + `scripts/audit.mjs` 只读审计 + `references/footer-lane.ts` 参考实现）。
 - **方案 A 已实践**：`dsh-cost-meter` v1.9.86（PR #577 / issue #576）落地「独占保持卡片、有邻居收成 36×36 钱包按钮、点击展开」，且不再修改宿主行的 `flex-wrap` / `flex-direction`。§25 状态由草案升为 v1.1，配图 `docs/images/06-cost-meter-form-a.png`，§90 增加卡片型参考实现。
 
 **触发来源**：`dsh-cost-meter#576`、`dsh-ui-usage-billing#130` 两个卡片型插件与其它 footer 入口并排时互相挤压（源自 `saya-ch/dsh-mobile#237` 的同一类问题）。
