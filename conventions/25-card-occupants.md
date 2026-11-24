@@ -1,6 +1,6 @@
 # 25 · 卡片型占用者（草案）
 
-> 状态：**v1.1 · 方案 A 已实践**（2026-11-23 起）。方案 A 已有第一个落地实现（`dsh-cost-meter` 1.9.86，见 [§90](90-reference-implementations.md)）；其余问题（高度上限、默认展开、排序归属、换行归属）仍待定。
+> 状态：**v1.2 · 方案 A 已实践 + 纵向栈分支（25.6）**（2026-11-24 起）。方案 A 已有第一个落地实现（`dsh-cost-meter` 1.9.86，见 [§90](90-reference-implementations.md)）；其余问题（高度上限、默认展开、排序归属、换行归属）仍待定。
 
 ## 1. 两种占用者的区别
 
@@ -49,11 +49,47 @@
 - 卡片型占用者与按钮型占用者的排序（`order` 是否仍按 §20 的档位，还是卡片统一置顶/置底）
 - B 形态下，`footerActions` 的 `flex-wrap` 由谁负责开（目前是插件各自注入，重复且会互相干扰）
 
-## 6. 讨论中的实例
+## 6. 纵向栈（25.6）
+
+> 触发来源：`dsh-cost-meter` 1.9.87 在手机端（DSH Mobile）侧栏的表现。手机端 footer 是**纵向栈**，方案 A 的「有邻居就收窄」按**同一横向 flex 行**的 `rowWidth` 判定，纵向时该判定永远不成立，卡片仍以 `width:100%` 铺满，把 Remote、导入会话等按钮挤到下方 —— 这是 §3 方案 A 的真空区。
+
+### 6.1 判定：只看 `flex-direction`
+
+| 环境 | 判定 | 卡片形态 |
+|---|---|---|
+| **横向行** | 最近的 footer 容器 `flex-direction` 不是 `column` | 卡片（方案 A 的宽态；同一行内是否需要收窄由 §3 的 `required(count)` 决定） |
+| **纵向栈** | 最近的 footer 容器 `flex-direction: column`（手机端侧栏） | 36x36 按钮 + 浮层 |
+
+测量对象是**最近的** `[data-slot="sidebar.footer.action"]`（桌面）或直接父节点（其它宿主）。
+
+```js
+const slot = card.closest('[data-slot="sidebar.footer.action"]') ?? card.parentElement
+const chip = getComputedStyle(slot).flexDirection === 'column'
+```
+
+> **为什么不用容器宽度做判据**：桌面侧栏 268px 内「独占一行」是正常形态，卡片本应完整显示；按 `clientWidth < 320px` 判定会把这种正常情况误降级成按钮（实测三组场景同时被降级）。宽度只在**同一横向行内还有邻居**时有意义，而这正是 §3 的 `count` + `rowWidth` 负责的，本节不应重复判定。
+
+### 6.2 降级形态（硬规则）
+
+![纵向栈降级：整卡 → 36×36 按钮 → 浮层](../docs/images/07-vertical-occupancy.png)
+
+
+1. **几何**：36x36 按钮、`border-radius: var(--dsw-radius-md, 12px)`、图标 18px、`margin: 4px 2px`；不得 50%（正圆）、不得 40px 窄条、不得小于 36px。
+2. **浮层**：点击展开，`role="dialog"`，锚定在按钮**上方**（`position:absolute; inset-block-end:calc(100% + 6px)`），`width: min(280px, 92vw)`、`max-height: min(60vh, 420px)` 内部滚动，`border-radius:12px`，背景 `--dsw-alias-bg-layer-1`。
+3. **不改变 footer 高度**：浮层必须绝对定位，不参与布局；不得用 `max-height` 撑开卡片或注入 `row-gap`。
+4. **关闭**：`Esc`、点击浮层外部、再次点击按钮都要关闭；`aria-expanded` 同步。
+5. **自动恢复**：容器回到横向且 >= 320px 时自动还原为卡片，不需要重载页面。
+6. **仍然禁止改造宿主**：纵向栈下尤其不得注入 `flex-direction` / `order` / `gap` 去改宿主容器（§4 规则 2 不因环境变化而放宽）。
+
+### 6.3 参考实现
+
+`dsh-cost-meter` v1.9.86 起已具备方案 A 的横向判定；纵向栈分支见 PR [#580](https://github.com/Han-1413141/dsh-cost-meter/pull/580)。实现要点：一个包裹组件持有 `chip` / `open` 两个状态，用 `ResizeObserver` 观测自身与最近的 footer 容器，把原有卡片节点在「行内」与「浮层内」之间整体搬移（不复制节点，避免两套状态）。
+
+## 7. 讨论中的实例
 
 | 插件 | 形态 | 状态 |
 |---|---|---|
 | [`dsh-cost-meter`](https://github.com/Han-1413141/dsh-cost-meter) | 纵向多行卡片，`width:100%`，最多注册 4 个节点 | **已按方案 A 落地**：v1.9.86（[PR #577](https://github.com/Han-1413141/dsh-cost-meter/pull/577)，issue [#576](https://github.com/Han-1413141/dsh-cost-meter/issues/576)） |
 | [`dsh-ui-usage-billing`](https://github.com/kenz1117/dsh-ui-usage-billing) | 宽卡（`@container` 三级降级），`order:-10` | 讨论中（[#130](https://github.com/kenz1117/dsh-ui-usage-billing/issues/130)） |
 
-方案 A 已落地，状态升为 v1.1；其余三个待定问题（高度上限、默认展开、排序归属）收敛后再小幅升版，并把最终形态补进 §20 的适配指南。
+方案 A 已落地（v1.1），纵向栈/窄栏分支见 §6（v1.2）；其余三个待定问题（高度上限、默认展开、排序归属）收敛后再小幅升版，并把最终形态补进 §20 的适配指南。
