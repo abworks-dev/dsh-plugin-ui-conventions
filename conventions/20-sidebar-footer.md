@@ -231,3 +231,41 @@ v1.0 用「全有或全无 + 容量公式」取代它。如果将来确实需要
 反模式（真实案例）：`if (nativeLayout()) return nodes` —— 用设备能力判断直接把图标布局整段回退成卡片，结果是设置里选了「图标」在手机上没有反应。
 
 参考实现：`dsh-cost-meter` 1.9.88+（`src/sidebar-icons/`：`cm-icons-row` 单行 36px、`cm-icons-list` 横向滚动、`cm-icons-panel` 内联展开，触屏与桌面窄侧栏共用同一份几何）。
+
+---
+
+## 20.12 纵向列容器（手机侧栏浮层、窄栏堆叠）（MUST）
+
+判定：离占位者最近的 footer 容器 `flex-direction` 不是 `row`（即 `column`）。与 §25.6 同一判据。
+
+> 别用 `wide` 判断横排还是纵排：手机端侧栏是整屏宽的浮层，**宽度够，`wide` 为真，但 footer 是纵向列**。`wide` 只回答「文字放不放得下」，不回答「行是横的还是竖的」。
+
+1. **每个占位者独占整行**：`width: 100%`（或 `align-self: stretch` + `flex: 0 0 auto`）。不要用 `flex: 0 0 auto` + `width: auto` / `fit-content` 把按钮缩到内容宽。
+   真实案例（手机实机）：同一列里「导入会话」306px、「Remote」93.6px、「移动访问」102px —— 三个都 42px 高、12px 圆角，但宽度不齐，看起来像三个不同控件。
+2. **`count` 不参与判定**：纵向列一行只放一个，§20.3 的 `required(count)` 只对横向行有意义，此处不得因为「有邻居」而收窄。
+3. **几何沿用文字态**：42px 高、`border-radius: var(--dsw-radius-md)`、`padding-inline: calc(var(--dsh-sidebar-row-padding,12px) - var(--dsh-sidebar-paint-inset,3px))`、`gap: var(--dsh-sidebar-label-gap,6px)`、字号 14/22、左对齐、单行 `text-overflow: ellipsis`。
+4. **图标态不用于纵向列**：整行宽度足够放文字；只有 rail（折叠侧栏，36px 宽）才用 36×36。
+5. **仍禁止改宿主容器**：不得注入 `align-items` / `flex-direction` / `gap` / `order`。
+
+**宿主注意**：手机浮层实测宿主列是 `align-items: center`。子项不显式写 `width: 100%` 就一定会缩到内容宽——这正是上面三个宽度不齐的直接原因。
+
+```ts
+// measureFooterLane / measureFooterSeat 已经给出 lane 事实
+const stacked = !facts.lane
+el('div', { className: `entry${wide ? ' isWide' : ' isRail'}${stacked ? ' isStacked' : ''}` }, ...)
+```
+
+```css
+.entry.isStacked { width: 100%; flex: 0 0 auto; align-self: stretch; margin: 4px 2px; }
+.entry.isStacked > .button { width: 100%; max-width: none; }
+```
+
+![纵向列：修正前 / 后](../docs/images/09-column-normalize.png)
+
+---
+
+## 20.13 文案（SHOULD）
+
+- 中文界面用中文文案，尽量不超过 4 个汉字；品牌名（如 `Remote`）可以保留，但应在 `title` / `aria-label` 里同时给出中文全称。
+- 同一组入口的文案长度尽量一致（2 字或 4 字），不要中英混排——不一致不会影响宽度对齐（宽度由 §20.12 决定），但会影响视觉节奏。
+- 文案改变不需要改几何；几何改变不需要改文案。
