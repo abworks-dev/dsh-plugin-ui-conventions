@@ -78,7 +78,7 @@ const chip = getComputedStyle(slot).flexDirection === 'column'
 2. **浮层**：点击展开，`role="dialog"`，锚定在按钮**上方**（`position:absolute; inset-block-end:calc(100% + 6px)`），`width: min(280px, 92vw)`、`max-height: min(60vh, 420px)` 内部滚动，`border-radius:12px`，背景 `--dsw-alias-bg-layer-1`。
 3. **不改变 footer 高度**：浮层必须绝对定位，不参与布局；不得用 `max-height` 撑开卡片或注入 `row-gap`。
 4. **关闭**：`Esc`、点击浮层外部、再次点击按钮都要关闭；`aria-expanded` 同步。
-5. **自动恢复**：容器回到横向且 >= 320px 时自动还原为卡片，不需要重载页面。
+5. **自动恢复**：容器回到横向（`flex-direction` 不再是 `column`）时自动还原为卡片，不需要重载页面。
 6. **仍然禁止改造宿主**：纵向栈下尤其不得注入 `flex-direction` / `order` / `gap` 去改宿主容器（§4 规则 2 不因环境变化而放宽）。
 
 ### 6.3 参考实现
