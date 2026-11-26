@@ -76,6 +76,18 @@ required(count) = count * 112 + (count - 1) * 4 + 16
 
 参考实现：`dsh-cost-meter` v1.9.86（PR #577），见 §90。
 
+## 3.5 点击后弹出的入口卡片：套 §30
+
+footer 入口点击后展开的浮层（popover / panel / dialog）不属于 §25；按 §30 先选形态：
+
+| 形态 | 何时用 | 关键值 |
+|---|---|---|
+| 菜单卡 | 一组动作 / 选项 | 直接用宿主 `Menu` / `MenuSurface`，不要自绘外壳 |
+| 锚定卡（默认） | 状态、数据、少量操作，内容 ≤ 440px | 16px 圆角、16px 内边距、300–440px 宽、`--dsw-specific-menu` + `--dsw-menu-backdrop-filter`、`--dsw-elevation-prominent`；非模态 `role="dialog"`（不写 `aria-modal`） |
+| 居中面板 | 多步流程，或内容 > 440px | 优先用宿主 `Modal`：28px 圆角、`--dsw-alias-bg-layer-2`、遮罩 `--dsw-alias-bg-mask-1`、`aria-modal="true"` |
+
+禁止：各插件自定 264 / 292 / 320 / 380 / 460 / 680 / 704px 宽度；8 / 10 / 14 / 18 / 20px 圆角；`border:1px` 叠自定义阴影；`z-index:9999` / `2147483000`；`max-height:calc(100vh - 140px)` 之类硬编码。
+
 ## 4. 删掉宿主改造
 
 审计脚本报 `HOST_MUTATION` 的地方逐条删除，常见形态：
@@ -107,6 +119,7 @@ required(count) = count * 112 + (count - 1) * 4 + 16
 - [ ] 默认前景色为 `var(--dsw-alias-label-primary)`，同排不混用 `label-secondary`（见 §20.2「关于前景色」）
 - [ ] 品牌 logo 走 §15 例外（18px 渲染、墨迹仍 13.5–17px、单色 `currentColor`，并在源码注释里声明）
 - [ ] 焦点环 `outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: -2px`
+- [ ] 点击后的浮层按 §30 选形（菜单卡 / 锚定卡 / 居中面板），没有自造宽度、圆角、阴影与层级
 - [ ] 审计脚本无 `FLEX_WRAP` / `HOST_MUTATION` / `RADIUS_50` / `ICON_OVERSIZE` / `ICON_FILL_HEX` / `ICON_VIEWBOX_DRIFT` 告警
 
 ## 7. 引用

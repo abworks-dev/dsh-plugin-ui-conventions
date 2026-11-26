@@ -75,7 +75,7 @@ const chip = getComputedStyle(slot).flexDirection === 'column'
 
 
 1. **几何**：36x36 按钮、`border-radius: var(--dsw-radius-md, 12px)`、图标 18px、`margin: 4px 2px`；不得 50%（正圆）、不得 40px 窄条、不得小于 36px。
-2. **浮层**：点击展开，`role="dialog"`，锚定在按钮**上方**（`position:absolute; inset-block-end:calc(100% + 6px)`），`width: min(280px, 92vw)`、`max-height: min(60vh, 420px)` 内部滚动，`border-radius:12px`，背景 `--dsw-alias-bg-layer-1`。
+2. **浮层**：点击展开，`role="dialog"`，锚定在按钮**上方**（`position:absolute; inset-block-end:calc(100% + 6px)`）；尺寸与皮肤按 §30.2 的 **S 紧凑卡**：`width:min(280px, calc(100vw - 24px))`、`max-height:calc(100dvh - 12px - max(12px, var(--dsh-frame-overlay-top,12px)))` 内部滚动、`border-radius:var(--dsw-radius-md,12px)`、背景 `var(--dsw-specific-menu)` + `backdrop-filter:var(--dsw-menu-backdrop-filter)`、`box-shadow:var(--dsw-elevation-prominent)`。
 3. **不改变 footer 高度**：浮层必须绝对定位，不参与布局；不得用 `max-height` 撑开卡片或注入 `row-gap`。
 4. **关闭**：`Esc`、点击浮层外部、再次点击按钮都要关闭；`aria-expanded` 同步。
 5. **自动恢复**：容器回到横向（`flex-direction` 不再是 `column`）时自动还原为卡片，不需要重载页面。
