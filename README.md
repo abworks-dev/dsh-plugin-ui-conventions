@@ -57,8 +57,9 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 
 `skills/dsh-ui-conventions/` 是一个给 agent 用的迁移助手，装上后可以让 AI 直接读着你插件的代码改：
 
-- `SKILL.md` —— 判定按钮型 / 卡片型、套 §20 或 §25、删宿主改造、自检清单
+- `SKILL.md` —— 判定按钮型 / 卡片型、套 §20 或 §25、删宿主改造、自检清单，以及 §0.5「外联提案」（插件不是自己维护时怎么把约定传播出去）
 - `scripts/audit.mjs` —— 只读审计：`node skills/dsh-ui-conventions/scripts/audit.mjs <插件仓库>`
+- `scripts/propose.mjs` —— 只读外联提案生成器：`node skills/dsh-ui-conventions/scripts/propose.mjs <插件仓库> --out out/<repo>`（产出 issue 草稿 + before/after 预览图，绝不自动开 issue）
 - `references/footer-lane.ts` —— 可直接拷走的容量契约实现（MIT）
 
 安装：把 `skills/dsh-ui-conventions/` 整个目录放到 DSH 的 skills 目录（`$DSH_HOME/skills/`）即可。
