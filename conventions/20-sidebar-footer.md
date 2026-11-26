@@ -48,6 +48,7 @@
 | 图标 | `16 × 16` | `18 × 18` | 墨迹盒与画风见 §15 |
 | 字号 | `14px / 22px` | — | |
 | `justify-content` | `flex-start` | `center` | |
+| 颜色 | `var(--dsw-alias-label-primary)` | `var(--dsw-alias-label-primary)` | 图标与文字同一 token；**不要用 `--dsw-alias-label-secondary`** |
 
 ### 状态
 
@@ -58,6 +59,12 @@ background-color: var(--dsw-alias-interactive-bg-hover);
 outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary));
 outline-offset: -2px;   /* 向内，避免被相邻入口裁掉 */
 ```
+
+### 关于前景色（MUST）
+
+入口的图标与文字统一用 `var(--dsw-alias-label-primary)`。官方 `ui-cordis` 的 footer 按钮（`.badge`）在文字态与 rail 图标态都用 `--dsw-alias-label-primary`；`dsh-mobile`、`dsh-chat-import`、`dsh-cost-meter` 三个已实践插件同样使用主标签色。
+
+`--dsw-alias-label-secondary` 是给次要信息/禁用态用的；同排入口若用它，会在深色主题下比其它入口明显发灰（官方值：`label-primary` = `#f9fafb`，`label-secondary` = `#cfd3d6`），看起来像被禁用。激活/当前选中态可以切 `--dsw-alias-brand-primary`，但默认态不要降级。
 
 ### 关于 `margin: 4px 2px`
 

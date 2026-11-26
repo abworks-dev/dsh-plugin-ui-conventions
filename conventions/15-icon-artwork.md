@@ -47,7 +47,7 @@
 |---|---|
 | 墨迹盒 | 相邻入口 `max(w,h)` 差 ≤ `2px` |
 | 笔画 | 描边风格一致（线型对线型、填充对填充），同一排不混用 |
-| 明暗 | 同级入口用同一 `label` token；不要一个 `label-primary` 一个 `label-secondary` |
+| 明暗 | 同级入口统一 `var(--dsw-alias-label-primary)`（见 §20.2「关于前景色」）；不要一个 `label-primary` 一个 `label-secondary` |
 
 ## 品牌 logo 例外（允许，但有三个门槛）
 
@@ -75,6 +75,7 @@
 - [ ] 图标态按 `18px` 渲染、文字态按 `16px`
 - [ ] 墨迹盒 `max(w,h)` 落在 `[13.5, 17]px`（图标态）
 - [ ] 只用 `currentColor`，无 hex、无渐变、无自带背景
+- [ ] 默认前景色为 `var(--dsw-alias-label-primary)`（不是 `label-secondary`）
 - [ ] 中心与按钮盒中心偏差 ≤ `0.5px`
 - [ ] 与相邻入口的墨迹覆盖率差 ≤ `15` 个百分点
 

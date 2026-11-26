@@ -104,6 +104,7 @@ required(count) = count * 112 + (count - 1) * 4 + 16
 - [ ] `wide` 与 `label` 已拆开
 - [ ] 图标态有 `aria-label` 和 `title`
 - [ ] 图标画风符合 §15：16×16 网格、1.0/1.3 用户单位描边、`currentColor`、不写死颜色；图标态墨迹 `max(w,h)` 落在 13.5–17px，文字态 12–15px
+- [ ] 默认前景色为 `var(--dsw-alias-label-primary)`，同排不混用 `label-secondary`（见 §20.2「关于前景色」）
 - [ ] 品牌 logo 走 §15 例外（18px 渲染、墨迹仍 13.5–17px、单色 `currentColor`，并在源码注释里声明）
 - [ ] 焦点环 `outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: -2px`
 - [ ] 审计脚本无 `FLEX_WRAP` / `HOST_MUTATION` / `RADIUS_50` / `ICON_OVERSIZE` / `ICON_FILL_HEX` / `ICON_VIEWBOX_DRIFT` 告警
