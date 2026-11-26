@@ -45,7 +45,7 @@
 | `border-radius` | `var(--dsw-radius-md,12px)` | `var(--dsw-radius-md,12px)` | **图标态也是 12px，不是 50%** |
 | `gap` | `var(--dsh-sidebar-label-gap,6px)` | `0` | |
 | `margin` | `4px 2px` | `4px 2px` | 两态一致，保证垂直位置不跳 |
-| 图标 | `16 × 16` | `18 × 18` | |
+| 图标 | `16 × 16` | `18 × 18` | 墨迹盒与画风见 §15 |
 | 字号 | `14px / 22px` | — | |
 | `justify-content` | `flex-start` | `center` | |
 
