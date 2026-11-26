@@ -18,6 +18,33 @@ node skills/dsh-ui-conventions/scripts/audit.mjs <插件仓库根目录>
 - 输出 `NO_FOOTER_SLOT` → 这个插件没有注册 `sidebar.footer.action`，**不要套用本约定**（其它槽位只适用 §00 原则）。
 - 输出里有 `FLEX_WRAP` / `HOST_MUTATION` / `ORDER_OVERRIDE` / `RADIUS_50` / `WIDTH_100` → 属于本约定的适用范围，继续。
 
+## 0.5 外联：插件不是自己维护的怎么办
+
+先跑第 0 步审计。如果插件**不是本机当前使用者维护的**（`gh api user` 的登录名 ≠ 仓库 owner），**不要直接改代码**——你只能改自己维护的仓库。改用提案包方式把约定传播出去：
+
+```bash
+node skills/dsh-ui-conventions/scripts/propose.mjs <插件仓库根目录> --out out/<repo> [--owner <你的 GitHub 登录名>]
+```
+
+脚本（只读，**绝不自动开 issue**）会：
+
+1. 确认插件确实注册了 `sidebar.footer.action`，否则退出并说明不适用（`NO_FOOTER_SLOT`）；
+2. 解析仓库 owner，与当前使用者对比，判定插件是不是自己维护的；
+3. 查重：对照已采纳插件清单 + 该仓库已有 issue，避免重复打扰；
+4. 判定按钮型 / 卡片型（§20 / §25），生成 matching 建议；
+5. 产出提案包 `out/<repo>/`：`issue.md`（issue 草稿）+ `preview.html` / `preview.png`（before/after 预览图）；
+6. 打印人工发出清单（含 `gh issue create` 命令）。
+
+**永远不要自动开 issue。** 发出是人最后一步：
+
+- 打开 `preview.html` / `preview.png` 检查预览效果；
+- 检查 `issue.md` 措辞与插件版本号；
+- 先读对方仓库的 `CONTRIBUTING` 与 issue 模板；
+- 用清单里的命令发出（或作为 PR 内容）；
+- 对方不接受就到此打住，不纠缠。
+
+护栏（脚本内已内置）：只对注册了 `sidebar.footer.action` 且未采纳的插件提；单仓库只提一次、同一下游全局限频；正文注明「由迁移助手生成、社区约定非官方」，并附已采纳插件与落地提交链接作证据。
+
 ## 1. 分类：按钮型还是卡片型
 
 | 类型 | 判定 | 走哪一节 |

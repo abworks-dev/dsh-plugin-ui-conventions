@@ -1,5 +1,10 @@
 # 变更记录
 
+## v1.1.4 — 2026-11-26
+
+- 新增**外联提案**能力（传播社区约定）：`skills/dsh-ui-conventions/scripts/propose.mjs` 只读地检查第三方插件仓库 → 确认注册了 `sidebar.footer.action`、判定按钮/卡片型、查重，再产出提案包（`issue.md` 草稿 + `preview.html`/`preview.png` before/after 预览图）；**绝不自动开 issue**，发出永远是人最后一步（`gh issue create`）。配套 `scripts/shot.mjs` 探测本机 Chrome/Edge 无头截图，找不到浏览器时静默跳过。
+- `SKILL.md` 新增 §0.5「外联：插件不是自己维护的怎么办」：只对自己维护的仓库改代码，第三方插件一律走提案包 + 人工发出；护栏=只对注册了槽位且未采纳的插件提、单仓库只提一次、正文注明社区约定非官方并附已采纳落地提交作证据。
+
 ## v1.1.3 — 2026-11-24
 
 - §20.12 新增「纵向列容器」：`flex-direction: column` 时每个占位者独占整行（`width:100%`），`count` 不参与判定，图标态不用于纵向列；附手机实机三种宽度不齐的对照图 `09-column-normalize.png`。
