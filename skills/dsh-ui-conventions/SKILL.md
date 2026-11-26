@@ -16,7 +16,7 @@ node skills/dsh-ui-conventions/scripts/audit.mjs <插件仓库根目录>
 ```
 
 - 输出 `NO_FOOTER_SLOT` → 这个插件没有注册 `sidebar.footer.action`，**不要套用本约定**（其它槽位只适用 §00 原则）。
-- 输出里有 `FLEX_WRAP` / `HOST_MUTATION` / `ORDER_OVERRIDE` / `RADIUS_50` / `WIDTH_100` → 属于本约定的适用范围，继续。
+- 输出里有 `FLEX_WRAP` / `HOST_MUTATION` / `ORDER_OVERRIDE` / `RADIUS_50` / `WIDTH_100` / `ICON_OVERSIZE` / `ICON_FILL_HEX` / `ICON_VIEWBOX_DRIFT` → 属于本约定的适用范围，继续。
 
 ## 1. 分类：按钮型还是卡片型
 
@@ -38,7 +38,7 @@ node skills/dsh-ui-conventions/scripts/audit.mjs <插件仓库根目录>
 | 圆角 | `12px` | `12px`（**不是 50%**） |
 | `padding-inline` | `calc(var(--dsh-sidebar-row-padding, 12px) - var(--dsh-sidebar-paint-inset, 3px))`（= 9px） | `0` |
 | `gap` | `var(--dsh-sidebar-label-gap, 6px)` | `0` |
-| 图标 | `16px` | `18px` |
+| 图标 | `16px` | `18px`（墨迹盒见 §15） |
 | 外边距 | `4px 2px` | `4px 2px` |
 | 文字 | 显示 | 隐藏（保留 `aria-label` / `title`） |
 
@@ -103,8 +103,11 @@ required(count) = count * 112 + (count - 1) * 4 + 16
 - [ ] 没有 `border-radius: 50%`
 - [ ] `wide` 与 `label` 已拆开
 - [ ] 图标态有 `aria-label` 和 `title`
-- [ ] 焦点环 `outline: 2px solid var(--dsw-alias-brand-primary); outline-offset: -2px`
-- [ ] 审计脚本无 `FLEX_WRAP` / `HOST_MUTATION` / `RADIUS_50` 告警
+- [ ] 图标画风符合 §15：16×16 网格、1.0/1.3 用户单位描边、`currentColor`、不写死颜色；图标态墨迹 `max(w,h)` 落在 13.5–17px，文字态 12–15px
+- [ ] 默认前景色为 `var(--dsw-alias-label-primary)`，同排不混用 `label-secondary`（见 §20.2「关于前景色」）
+- [ ] 品牌 logo 走 §15 例外（18px 渲染、墨迹仍 13.5–17px、单色 `currentColor`，并在源码注释里声明）
+- [ ] 焦点环 `outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary)); outline-offset: -2px`
+- [ ] 审计脚本无 `FLEX_WRAP` / `HOST_MUTATION` / `RADIUS_50` / `ICON_OVERSIZE` / `ICON_FILL_HEX` / `ICON_VIEWBOX_DRIFT` 告警
 
 ## 7. 引用
 

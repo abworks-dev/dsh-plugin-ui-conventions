@@ -20,6 +20,7 @@ outline-offset: -2px;
 
 | 状态 | 样式 |
 |---|---|
+| 默认（文字与图标） | `color: var(--dsw-alias-label-primary)`（footer 入口；见 §20.2「关于前景色」） |
 | hover | `background-color: var(--dsw-alias-interactive-bg-hover)` |
 | active / 展开中 | 同 hover，可叠 `background-color: var(--dsw-alias-interactive-bg-hover-solid)` |
 | disabled | `opacity: 0.5` + `cursor: default`，不改变几何 |
