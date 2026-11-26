@@ -31,7 +31,7 @@ DSH 的侧栏、面板等区域由宿主提供容器，插件往同一个容器�
 | [15 · 图标画风与墨迹盒](conventions/15-icon-artwork.md) | 16×16 网格、1.0/1.3 用户单位描边、`currentColor`；图标态/文字态墨迹盒与品牌 logo 例外 | 草案 |
 | [20 · 侧栏底部入口（footer.action）](conventions/20-sidebar-footer.md) | 两态几何、容量规则、order 档位、适配指南、反模式、窄屏/触屏图标态、纵向列与文案 | **v1.2 · 已实践** |
 | [25 · 卡片型占用者](conventions/25-card-occupants.md) | 卡片型（信息卡/数据卡）与按钮型共存的三种形态与硬规则；25.6 纵向栈/窄栏降级 | v1.2 · 方案 A + 纵向栈分支 |
-| [30 · 入口卡片与浮层](conventions/30-panels.md) | 菜单卡 / 锚定卡 / 居中面板三形态、卡片皮肤与几何、反模式与官方来源 | 草案 v0.9 |
+| [30 · 入口卡片与浮层](conventions/30-panels.md) | 菜单卡 / 锚定卡 / 居中面板三形态、卡片皮肤与几何、反模式与组件来源 | 草案 v0.9 |
 | [40 · 状态、焦点与可访问性](conventions/40-states-and-a11y.md) | 焦点环、hover/active、图标态的命名 | v1.0（部分） |
 | [90 · 参考实现](conventions/90-reference-implementations.md) | 已采纳插件的版本、代码位置、实测数字 | v1.0 |
 

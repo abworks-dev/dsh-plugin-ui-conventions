@@ -1,6 +1,6 @@
 # 30 · 入口卡片与浮层
 
-> 状态：**草案 v0.9 · 官方反推稿**（2026-11-26）。下面的数值全部从官方 `ui-primitives`、`ui-chat`、`ui-settings-general`、`ui-cordis` 的组件样式反推，尚无插件按此改造；等真实插件落地后再升 `v1.0`。
+> 状态：**草案 v0.9**（2026-11-26）。下面的数值取自宿主 `ui-primitives`、`ui-chat`、`ui-settings-general`、`ui-cordis` 的组件样式，尚无插件按此改造；等真实插件落地后再升 `v1.0`。
 
 本节说的「入口卡片」是**点击侧栏（含底部 footer）入口后弹出的浮层**；footer 行内常驻的卡片型占用者不属于本节，见 [§25](25-card-occupants.md)。
 
@@ -8,7 +8,7 @@
 
 ## 30.1 三种形态与判定
 
-| 形态 | 何时用 | 官方参照 | 关键特征 |
+| 形态 | 何时用 | 宿主参照 | 关键特征 |
 |---|---|---|---|
 | **菜单卡** | 一组动作 / 选项 | `Menu` + `MenuSurface` | 直接复用宿主菜单，不自绘外壳 |
 | **锚定卡（默认）** | 状态、数据、少量操作，内容宽度 ≤ 440px | `ui-chat/src/client/chat/stat-dialog.module.css`（触发器锚定 dialog） | 非模态、贴着触发器、无遮罩 |
@@ -16,11 +16,11 @@
 
 判定顺序：能用菜单就不要做卡片 → 否则默认锚定卡 → 只有内容确实超过 440px 或必须阻断页面时才升级为居中面板。
 
-锚定卡再分两档（沿用官方 `MenuSurface` 的 `surface` / `compact` 圆角梯级）：**S 紧凑卡**（宽度 `min(280px, calc(100vw - 24px))`、圆角 12px、内边距 12px，只用于 36×36 图标触发的单值 / 快捷操作）与 **M 标准卡**（默认，见 30.2）。
+锚定卡再分两档（沿用宿主 `MenuSurface` 的 `surface` / `compact` 圆角梯级）：**S 紧凑卡**（宽度 `min(280px, calc(100vw - 24px))`、圆角 12px、内边距 12px，只用于 36×36 图标触发的单值 / 快捷操作）与 **M 标准卡**（默认，见 30.2）。
 
 ## 30.2 锚定卡（M 标准卡，默认形态，MUST）
 
-| 项目 | 值 | 反推来源 |
+| 项目 | 值 | 来源 |
 |---|---|---|
 | 圆角 | `var(--dsw-radius-lg)` = 16px | `stat-dialog.module.css` / `MenuSurface.module.css` |
 | 内边距 | 16px | `stat-dialog.module.css:13` |
@@ -31,13 +31,13 @@
 | 背景 | `var(--dsw-specific-menu)` + `backdrop-filter: var(--dsw-menu-backdrop-filter)`（= `blur(40px) saturate(150%)`） | `stat-dialog.module.css:16-17`；`gradient-shadow-text.css:20` |
 | 描边 / 阴影 | `border:0`；`--dsw-elevation-stroke-color: var(--dsw-alias-border-l1)`；`box-shadow: var(--dsw-elevation-prominent)` | `stat-dialog.module.css:14-19` |
 | 正文字号 | 12px / 18px；`color: var(--dsw-alias-label-secondary)` | `stat-dialog.module.css:20-22` |
-| 标题 | 14px / 20px，`font-weight:500`，`color: var(--dsw-alias-label-primary)` | `CordisPanel.module.css` 的 `.title`（官方插件入口面板） |
+| 标题 | 14px / 20px，`font-weight:500`，`color: var(--dsw-alias-label-primary)` | `CordisPanel.module.css` 的 `.title`（宿主插件入口面板） |
 | 滚动 | 只有内容区滚动；`--dsh-scrollbar-thumb: var(--dsw-alias-scrollbar-bg-l2)`；`--dsh-scrollbar-thumb-hover: var(--dsw-alias-scrollbar-hover-l2)` | `stat-dialog.module.css:26-28` |
 | 层级 | `z-index: 1100`（portal 层） | `stat-dialog.module.css:5`；`Menu.module.css` 的 `.portal` |
 
 S 紧凑卡：宽度 `min(280px, calc(100vw - 24px))`；圆角 `var(--dsw-radius-md)` = 12px；内边距 12px；其余材质、阴影、字体与本表一致。§25.6 的纵向栈浮层即此档，按这里取值。
 
-结构建议（与官方 `stat-dialog` 一致）：
+结构建议（与宿主 `stat-dialog` 一致）：
 
 - 标题行：`display:flex; justify-content:space-between; gap:16px; margin-bottom:8px`，左侧标题 + 图标（图标 14×14，gap 6px），右侧数值 `font-variant-numeric: tabular-nums`
 - 标题下分隔线：`border-top: 0.5px solid var(--dsw-alias-border-l2); margin-bottom:10px`
@@ -56,7 +56,7 @@ S 紧凑卡：宽度 `min(280px, calc(100vw - 24px))`；圆角 `var(--dsw-radius
 
 当内容宽度超过 440px，或流程需要阻断页面时使用。
 
-| 项目 | 值 | 反推来源 |
+| 项目 | 值 | 来源 |
 |---|---|---|
 | 遮罩层 | `position:fixed; inset:0; z-index:1000`；居中；`padding:max(24px, var(--dsh-frame-overlay-top,24px)) 24px` | `Modal.module.css:6-15` |
 | 遮罩 | `position:absolute; inset:var(--dsh-frame-chrome-top,0) 0 0`；`background:var(--dsw-alias-bg-mask-1)`；`backdrop-filter:var(--dsw-mask-blur)`；点击关闭 | `Modal.module.css:18-30` |
@@ -73,7 +73,7 @@ S 紧凑卡：宽度 `min(280px, calc(100vw - 24px))`；圆角 `var(--dsw-radius
 
 如果卡片本质是一组命令/选项，直接使用宿主 `Menu` / `MenuSurface`，不要自绘卡片外壳：
 
-| 项目 | 值 | 反推来源 |
+| 项目 | 值 | 来源 |
 |---|---|---|
 | 卡面圆角 | `var(--dsw-radius-lg)` = 16px；紧凑变体 `var(--dsw-radius-md)` = 12px | `MenuSurface.module.css:1-8` |
 | 卡面内边距 | 4px | `Menu.module.css:11` |
@@ -82,7 +82,7 @@ S 紧凑卡：宽度 `min(280px, calc(100vw - 24px))`；圆角 `var(--dsw-radius
 | 卡面材质 | `var(--dsw-menu-surface-fill)` + `var(--dsw-menu-backdrop-filter)` | `MenuSurface.module.css:21-29` |
 | 阴影 | `box-shadow: var(--dsw-elevation-prominent)`；`--dsw-elevation-stroke-color: var(--dsw-alias-border-l1)` | `Menu.module.css:16-17` |
 
-`AccountMenu` 的已登录菜单就是官方范例：`AccountMenu.module.css` 里只调 `min-width/max-width/padding` 和菜单项高度，没有重画阴影与圆角。
+`AccountMenu` 的已登录菜单就是宿主范例：`AccountMenu.module.css` 里只调 `min-width/max-width/padding` 和菜单项高度，没有重画阴影与圆角。
 
 ## 30.5 禁止事项（反模式）
 
@@ -104,12 +104,12 @@ S 紧凑卡：宽度 `min(280px, calc(100vw - 24px))`；圆角 `var(--dsw-radius
 | 插件 | 卡片选择器 | 宽度 | 圆角 | 内边距 | 背景 | 阴影 | 主要偏差 |
 |---|---|---|---|---|---|---|---|
 | `dsh-cost-meter` | `.cm-chip-pop` | `min(264px, 100vw-16px)` | 12px | 8px | `bg-layer-1`（不透明） | `0 8px 24px #0003` | 宽度低于 300、内边距 8、非菜单面、自定义阴影、`z-index:9999` |
-| `dsh-magpie-connector` | `.dmg-sidebar-popover` | 未设上下限 | 16px | 12px 14px | `specific-menu` + `blur(20px)` | 自定义双层 | 无宽度上下限、内边距 12/14、blur 20px 非官方 40px saturate(150%)、自定义阴影 |
+| `dsh-magpie-connector` | `.dmg-sidebar-popover` | 未设上下限 | 16px | 12px 14px | `specific-menu` + `blur(20px)` | 自定义双层 | 无宽度上下限、内边距 12/14、blur 20px 偏离宿主 40px saturate(150%)、自定义阴影 |
 | `dsh-mobile` | `.dsh-mobile-control__panel` | `min(704px, 100vw-32px)` | 16px | 16px | `bg-layer-2` | `0 12px 34px …` | 宽度 704px 超过锚定卡上限，应改居中面板（28px 圆角 / `layer-2` / 遮罩）或收窄到 ≤440 |
 | `ds-harness-remote` | `.dshRemoteRoutePanel` / `.dshRemoteHostReferencePanel` / `.dshRemoteConnectedPanel` / `.dshRemoteDialog` | 320 / 380 / 460 / 680px | 12 / 12 / 12 / 14px | 10×12 / 16 / 16 / 18px | `layer-1` / `layer-2` + 1px border | 各自自定义 | 四种面板规格并存、圆角 12/14、1px 边框、`z-index:2147483000` |
 | `dsh-chat-import` | 宿主 `primitives.Modal` | `min(380px,100%)` | 28px | 24px（内容列） | `bg-layer-2` | `elevation-prominent` | 符合居中面板路径（弹的是导入向导，属模态流程） |
 
-## 30.7 官方来源索引
+## 30.7 组件来源索引
 
 | 组件 | 文件 | 关键行 |
 |---|---|---|
@@ -118,11 +118,11 @@ S 紧凑卡：宽度 `min(280px, calc(100vw - 24px))`；圆角 `var(--dsw-radius
 | 菜单列表 | `packages/client/ui-primitives/src/Menu.module.css` | `:28-35` 宽度；`:178-193` 菜单项 |
 | 模态 | `packages/client/ui-primitives/src/Modal.module.css` | `:6-48` 遮罩与面板；`:71-147` 头/体/底 |
 | 设置面板 | `packages/client/ui-settings-general/src/client/SettingsRoot.module.css` | `:95-108` 800×800 面板 |
-| 官方插件入口面板 | `packages/extensions/ui-cordis/src/client/CordisPanel.module.css` | `.panel`（420px / 12px 圆角 / 菜单面 / 60vh） |
+| 宿主插件入口面板 | `packages/extensions/ui-cordis/src/client/CordisPanel.module.css` | `.panel`（420px / 12px 圆角 / 菜单面 / 60vh） |
 | 阴影与 elevation | `packages/client/ui-theme/src/styles/gradient-shadow-text.css` | `:34-40` `--dsw-elevation-panel` / `--dsw-elevation-prominent` |
 | 圆角 token | `packages/client/ui-theme/src/styles/design-platform.css` | `--dsw-radius-lg` 16 / `--dsw-radius-panel` 28 |
 
-> 说明：官方 `ui-cordis` 的插件入口面板是 12px 圆角、420px 宽，属于官方内部的孤例（和 §15 里它的 rail 50% 圆角一样未收敛）。本节按设计系统的主干 token（`--dsw-radius-lg` = 16）取 16px，并把 420px 作为宽度上限的参考。
+> 说明：宿主 `ui-cordis` 的插件入口面板是 12px 圆角、420px 宽，属于宿主内部的孤例（和 §15 里它的 rail 50% 圆角一样未收敛）。本节按设计系统的主干 token（`--dsw-radius-lg` = 16）取 16px，并把 420px 作为宽度上限的参考。
 
 ## 30.8 迁移顺序建议
 
