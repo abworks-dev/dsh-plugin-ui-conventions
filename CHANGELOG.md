@@ -1,5 +1,13 @@
 # 变更记录
 
+## v1.1.4 — 2026-11-27
+
+**§20.2 焦点令牌优先级（MUST）**
+- 新增「键盘焦点令牌优先级」：`outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary))`、`outline-offset: -2px`。明确「先取 focus-ring，再回退业务主色」，直接写 `--dsw-alias-brand-primary` 会跳过宿主的焦点色设置，仅作最后一级兼容回退；内联焦点处理同样适用。
+- 审计脚本 `audit.mjs` 补两条整文件规则：`FOCUS_TOKEN_ORDER`（焦点轮廓直接用品牌主色）、`FOCUS_OUTLINE_OFFSET`（`outline-offset` 向外为正）。仍仅对注册 `sidebar.footer.action` 的仓库生效。
+- §40 同步指向这条优先级与两个审计规则。
+- 触发来源：Windows 桌面 DSH 0.2.3-alpha.2 侧栏底部五项实测，见 `docs/pilot-chat-import-footer.md`。
+
 ## v1.1.3 — 2026-11-24
 
 - §20.12 新增「纵向列容器」：`flex-direction: column` 时每个占位者独占整行（`width:100%`），`count` 不参与判定，图标态不用于纵向列；附手机实机三种宽度不齐的对照图 `09-column-normalize.png`。

@@ -14,6 +14,8 @@ outline-offset: -2px;
 1. **`outline-offset: -2px`（向内）**。行内入口紧贴容器边缘，向外画会被相邻入口或容器裁掉。
 2. **选择器特异度要够**。宿主/插件常有形如 `.my-control button:focus-visible`（0,2,1）的通用规则，你的 `.my-entry:focus-visible`（0,2,0）会被它压过。要么提升到同等特异度（如 `.my-control .my-entry:focus-visible` → 0,3,0），要么用同样的形状写。
 
+`--dsw-focus-ring-color` 缺省时会回退到 `--dsw-alias-state-business-primary`；若直接写 `--dsw-alias-brand-primary`，就跳过了宿主的焦点色设置。审计脚本对这两类偏离报 `FOCUS_TOKEN_ORDER` / `FOCUS_OUTLINE_OFFSET`（完整优先级见 §20.2）。
+
 > 0.8.15 起 `dsh-mobile` 已改用这条宿主链（`--dsw-focus-ring-color` 未定义时回退到 `--dsw-alias-state-business-primary`），与宿主 `ui-theme/src/styles/focus.css` 的做法一致。
 
 ## 交互态

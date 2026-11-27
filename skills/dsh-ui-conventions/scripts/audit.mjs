@@ -9,7 +9,7 @@
  * seat rules match within ~400 chars of that mention so the report stays about
  * the footer seat instead of every `width:100%` in the repo; the icon rules
  * (§15) inspect the whole of such files because icon definitions usually live
- * in the rendering component, far from the slot registration.
+ * in the rendering component, far from the slot registration; the focus rules (§20.2) inspect the whole file too, since the focus outline is set in the render path.
  * Nothing is written and nothing from the target is executed.
  */
 import fs from 'node:fs';
@@ -19,6 +19,22 @@ const root = path.resolve(process.argv[2] || '.');
 const SKIP = new Set(['node_modules', '.git', 'coverage', '.next', 'out', 'dist']);
 const EXT = new Set(['.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.css', '.scss']);
 const SLOT = 'sidebar.footer.action';
+
+// Inspect literal declarations only. A local CSS variable can carry the chain
+// from another file, so leave such indirections to the keyboard check.
+function focusTokenNeedsReview(value) {
+  const color = value.match(/var\(\s*([\w-]+)/);
+  if (!color) return false;
+  switch (color[1]) {
+    case '--dsw-alias-brand-primary':
+    case '--dsw-alias-state-business-primary':
+      return true;
+    case '--dsw-focus-ring-color':
+      return false;
+    default:
+      return false;
+  }
+}
 
 const RULES = [
   { id: 'FLEX_WRAP', re: /flex-wrap\s*:\s*wrap|flexWrap\s*=\s*['"]wrap['"]/, msg: '给宿主行开 wrap（应由宿主决定）' },
@@ -34,6 +50,17 @@ const RULES = [
   { id: 'ICON_OVERSIZE', wholeFile: true, re: /\.[\w-]*(?:sidebar|footer|rail)[\w-]*[^{}]*\.[\w-]*(?:icon|logo|bird|glyph|mark)[\w-]*\s*\{[^}]*\b(?:width|height)\s*:\s*(?:20|[2-9]\d|3[0-5])\s*px|<svg[^>]*\b(?:width|height)\s*=\s*["'](?:2[0-9]|[3-9]\d|\d{3,})["'][^>]*>/, msg: '图标渲染尺寸超限（图标态应为 18px，文字态 16px；20px 及以上需 §15 品牌例外）' },
   { id: 'ICON_FILL_HEX', wholeFile: true, re: /<svg[^>]*\b(?:fill|stroke)\s*=\s*["']#[0-9a-fA-F]{3,8}\b/, msg: 'SVG 写死颜色（§15：fill/stroke 应只用 currentColor）' },
   { id: 'ICON_VIEWBOX_DRIFT', wholeFile: true, re: /viewBox\s*[:=]\s*["']0 0 (?:[4-9]\d|\d{3,}) (?:[4-9]\d|\d{3,})["']/, msg: 'viewBox 非 16×16 网格（44/1024 等旧资产；§15 品牌 logo 例外须注释声明）' },
+  /*
+   * 焦点两条规则（§20.2）：焦点轮廓常在渲染组件的 onFocus/样式里，
+   * 离 slot 提及点很远，故整文件匹配，只对注册了 footer slot 的插件生效。
+   */
+  { id: 'FOCUS_TOKEN_ORDER', wholeFile: true,
+    re: /(?:\boutline(?:-color)?\s*:\s*[`'"]?|\.style\.outline(?:Color)?\s*=\s*[`'"])([^;{}'"`]+)/,
+    warn: focusTokenNeedsReview, msg: '核对入口焦点颜色（§20.2：先取宿主焦点色，再回退业务主色）' },
+  { id: 'FOCUS_OUTLINE_OFFSET', wholeFile: true,
+    re: /(?:\boutline-offset\s*:\s*[`'"]?|\.style\.outlineOffset\s*=\s*[`'"])([+-]?(?:\d*\.)?\d+(?:px|em|rem|pt)?)(?=\s*(?:!important|[;}'"`]|$))/,
+    warn: value => !(value.endsWith('px') && parseFloat(value) === -2),
+    msg: '核对入口焦点偏移（§20.2：outline-offset 应为 -2px，向内绘制）' },
 ];
 
 function* walk(dir) {
@@ -73,6 +100,7 @@ for (const file of walk(root)) {
       const re = rule.wholeFile ? new RegExp(rule.re.source, 'g') : rule.re;
       let hit;
       while ((hit = re.exec(hay)) !== null) {
+        if (rule.warn && !rule.warn(hit[1])) continue;
         const absolute = base + hit.index;
         const line = lineOf(text, absolute);
         const lineStart = text.lastIndexOf('\n', absolute) + 1;

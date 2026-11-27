@@ -60,6 +60,12 @@ outline: 2px solid var(--dsw-focus-ring-color, var(--dsw-alias-state-business-pr
 outline-offset: -2px;   /* 向内，避免被相邻入口裁掉 */
 ```
 
+### 键盘焦点令牌优先级（MUST）
+
+文字态和图标态共用上面的 `:focus-visible` 轮廓。优先取 `--dsw-focus-ring-color`，以响应宿主的焦点色设置。宿主缺省该令牌时，回退到 `--dsw-alias-state-business-primary`。需要兼容仅提供旧品牌色的宿主时，可将 `var(--dsw-alias-brand-primary)` 放在业务主色的最后一级回退。直接取品牌主色会跳过宿主的焦点色设置。
+
+轮廓宽 `2px`、样式 `solid`、`outline-offset: -2px`，向按钮内部绘制。使用内联焦点处理时也遵循同一顺序。浅暗主题均应实际按 Tab，检查命中的 `:focus-visible` 及计算轮廓。若入口沿用宿主样式，先在运行时核对颜色、线型和偏移。
+
 ### 关于前景色（MUST）
 
 入口的图标与文字统一用 `var(--dsw-alias-label-primary)`。官方 `ui-cordis` 的 footer 按钮（`.badge`）在文字态与 rail 图标态都用 `--dsw-alias-label-primary`；`dsh-mobile`、`dsh-chat-import`、`dsh-cost-meter` 三个已实践插件同样使用主标签色。
