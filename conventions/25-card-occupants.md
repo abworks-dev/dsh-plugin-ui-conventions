@@ -53,33 +53,24 @@
 
 > 触发来源：`dsh-cost-meter` 1.9.87 在手机端（DSH Mobile）侧栏的表现。手机端 footer 是**纵向栈**，方案 A 的「有邻居就收窄」按**同一横向 flex 行**的 `rowWidth` 判定，纵向时该判定永远不成立，卡片仍以 `width:100%` 铺满，把 Remote、导入会话等按钮挤到下方 —— 这是 §3 方案 A 的真空区。
 
-### 6.1 判定：只看 `flex-direction`
+### 6.1 判定：读实际 footer 布局容器的 `flex-direction`
 
 | 环境 | 判定 | 卡片形态 |
 |---|---|---|
-| **横向行** | 最近的 footer 容器 `flex-direction` 不是 `column` | 卡片（方案 A 的宽态；同一行内是否需要收窄由 §3 的 `required(count)` 决定） |
-| **纵向栈** | 最近的 footer 容器 `flex-direction: column`（手机端侧栏） | 36x36 按钮 + 浮层 |
+| **横向行** | `row` / `row-reverse` | 按 §3 的方案 A 判定，不因侧栏窄就额外触发本节降级 |
+| **纵向栈** | `column` / `column-reverse` | 36×36 按钮，点击访问卡片内容 |
 
-测量对象是**最近的** `[data-slot="sidebar.footer.action"]`（桌面）或直接父节点（其它宿主）。
-
-```js
-const slot = card.closest('[data-slot="sidebar.footer.action"]') ?? card.parentElement
-const chip = getComputedStyle(slot).flexDirection === 'column'
-```
-
-> **为什么不用容器宽度做判据**：桌面侧栏 268px 内「独占一行」是正常形态，卡片本应完整显示；按 `clientWidth < 320px` 判定会把这种正常情况误降级成按钮（实测三组场景同时被降级）。宽度只在**同一横向行内还有邻居**时有意义，而这正是 §3 的 `count` + `rowWidth` 负责的，本节不应重复判定。
+从自己的占位元素向上找到**实际承载 footer 入口的 flex 布局盒**，跳过 `display: contents` 槽包装；可参考 [`measureFooterSeat`](../skills/dsh-ui-conventions/references/footer-lane.ts)。未找到布局盒不能当作纵向。这里判断的是排列方向，不是设备类型或视口宽度：桌面窄栏的独占横行仍可能放下整张卡片，而整屏宽的手机侧栏也可能是纵向栈。
 
 ### 6.2 降级形态（硬规则）
 
 ![纵向栈降级：整卡 → 36×36 按钮 → 浮层](../docs/images/07-vertical-occupancy.png)
 
 
-1. **几何**：36x36 按钮、`border-radius: var(--dsw-radius-md, 12px)`、图标 18px、`margin: 4px 2px`；不得 50%（正圆）、不得 40px 窄条、不得小于 36px。
-2. **浮层**：点击展开，`role="dialog"`，锚定在按钮**上方**（`position:absolute; inset-block-end:calc(100% + 6px)`），`width: min(280px, 92vw)`、`max-height: min(60vh, 420px)` 内部滚动，`border-radius:12px`，背景 `--dsw-alias-bg-layer-1`。
-3. **不改变 footer 高度**：浮层必须绝对定位，不参与布局；不得用 `max-height` 撑开卡片或注入 `row-gap`。
-4. **关闭**：`Esc`、点击浮层外部、再次点击按钮都要关闭；`aria-expanded` 同步。
-5. **自动恢复**：容器回到横向（`flex-direction` 不再是 `column`）时自动还原为卡片，不需要重载页面。
-6. **仍然禁止改造宿主**：纵向栈下尤其不得注入 `flex-direction` / `order` / `gap` 去改宿主容器（§4 规则 2 不因环境变化而放宽）。
+1. **入口几何不变**：36×36 按钮、18px 图标、`margin: 4px 2px`；沿用 [§10](10-host-tokens.md#圆角侧栏入口与展开内容分开) 的入口圆角，不改成正圆、窄条或更小的点击区。
+2. **点击访问完整内容**：卡片明细默认用非模态锚定面板；如果展开的只是命令或选项，则用菜单。按钮是锚点，底部入口优先向上展开；组件选型、边界、关闭和焦点按 [§30](30-panels.md)，本节不另定浮层材质、圆角或固定宽高。§20.11 的窄屏内联明细、§20.12 的纵向列整行布局属于宿主自适应形态，命中时按 §20 执行，不改造成锚定浮层。
+3. **自动恢复**：容器回到横向时关闭旧浮层，按 §3 重新判定卡片形态；不需重载，也不丢失卡片的数据状态。
+4. **不改变 footer 或邻居**：展开内容不进入纵向栈的文档流，也不注入 `flex-direction` / `order` / `gap` 改宿主。这里只处理卡片降级；§20.11 自有横向图标条的内联明细规则不变。
 
 ### 6.3 参考实现
 

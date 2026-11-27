@@ -1,10 +1,10 @@
 # 10 · 宿主 token 与尺度基准
 
-所有数值以宿主 `@deepseek-ai/dsh-client-ui-sidebar` 与 `dsh-client-ui-theme` 的公开 token 为准。下表是 v1.0 时的实测值，插件应**引用变量名**而不是抄数字。
+本节只记录**侧栏入口如何跟宿主对齐**。通用颜色、材质、阴影、动效与共享组件以官方 [Web UI 样式规范](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/web-styling.md) 为准；插件按目标宿主版本引用语义 token，不把实测值当作另一套主题。
 
 ## 侧栏间距 token
 
-定义在宿主侧栏根节点的 `:root` 上：
+以下是宿主侧栏提供的 token。数值为实测参考，插件应引用变量名：
 
 | Token | 值 | 含义 |
 |---|---|---|
@@ -25,20 +25,9 @@ background-clip: padding-box;
 
 `border-inline` 是透明的，但会占位；`background-clip: padding-box` 让 hover 底色不画到那 3px 里。两者相抵后，**文字起点仍然是 12px，而底色比行盒内缩 3px**。照抄这一个组合是让「我的按钮和设置行左边缘严格对齐」的唯一办法。
 
-## 圆角梯级
+## 圆角：侧栏入口与展开内容分开
 
-来自主题包 `--dsw-*` 系列：
-
-| Token | 值 | 典型用途 |
-|---|---|---|
-| `--dsw-radius-xs` | `4px` | 徽标、小标签 |
-| `--dsw-radius-sm` | `8px` | 紧凑控件 |
-| `--dsw-radius-md` | `12px` | **行级控件（本约定的默认值）** |
-| `--dsw-radius-lg` | `16px` | 卡片 |
-| `--dsw-radius-xl` | `20px` | 面板 |
-| `--dsw-radius-panel` | `28px` | 浮层面板外框 |
-
-**行级控件一律用 `--dsw-radius-md`（12px），不要用 `50%`。** 圆形按钮在行里会破坏「一行等高同形」的观感，也是 2026-11 那轮三插件不一致的主要观感来源之一（见 §20 反模式）。
+圆角梯级与组件例外见官方 [圆角规范](https://github.com/deepseek-ai/deepseek-harness/blob/master/docs/ui-radius.md#radius-scale)，本仓不另列通用尺寸表。**§20 的行级入口和 §25.6 的降级按钮用 `--dsw-radius-md`，不做成 `50%` 圆形**，以便同列入口对齐。展开后的菜单、内容卡或承载面板按自身角色选型，不继承触发按钮的圆角，见 [§30](30-panels.md)。
 
 ## 尺寸基准
 
@@ -56,7 +45,5 @@ background-clip: padding-box;
 |---|---|
 | 主文字 | `--dsw-alias-label-primary` |
 | hover 底色 | `--dsw-alias-interactive-bg-hover` |
-| 焦点环 | `--dsw-focus-ring-color`（未定义时回退 `--dsw-alias-state-business-primary`） |
-| 品牌/业务强调 | `--dsw-alias-state-business-primary` |
-
-> 注：这是宿主 `ui-theme/src/styles/focus.css` 的写法 —— `outline-color: var(--dsw-focus-ring-color, var(--dsw-alias-state-business-primary))`；`--dsw-focus-ring-color` 只在指针模态被设为 `transparent`，键盘导航时自动回退到业务主色。
+| 键盘焦点环 | 见 [§20.2 键盘焦点令牌优先级](20-sidebar-footer.md#键盘焦点令牌优先级must) |
+| 业务强调 | `--dsw-alias-state-business-primary` |
